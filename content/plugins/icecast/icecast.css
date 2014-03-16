@@ -1,0 +1,48 @@
+.widget_icastglobal .mejs-duration-container {
+    display: none !important;
+}
+
+.widget_icastglobal .mejs-currenttime-container {
+    float: right !important;
+}
+
+.widget_icastglobal .mejs-time-rail {
+    display: none !important;
+}
+
+.widget_icastglobal .mejs-volume-button {
+    display: none !important;
+}
+
+.widget_icastglobal .mejs-volume-slider {
+    display: none !important;
+}
+
+.widget_icastglobal .mejs-horizontal-volume-slider {
+    display: none !important;
+}
+
+.widget_icastglobal .mejs-container {
+    background: transparent;
+}
+
+.widget_icastglobal .mejs-container .mejs-controls {
+    height: 100%;
+}
+
+.widget_icastglobal .mejs-container .mejs-controls .mejs-playpause-button {
+    height: 100%;
+    width: 30px;
+}
+
+.widget_icastglobal .mejs-container .mejs-controls .mejs-playpause-button button {
+    height: 100%;
+    width: 30px;
+    padding: 0;
+    margin: 0;
+    background-size: 249px auto;
+}
+
+.widget_icastglobal .mejs-container .mejs-controls .mejs-pause button {
+    background-position: 0 -27px;
+}

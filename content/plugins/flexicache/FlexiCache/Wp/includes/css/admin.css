@@ -1,0 +1,44 @@
+.flexicache pre {
+	background: #fff;
+	border: solid 1px #dfdfdf;
+	padding: 1em;
+}
+
+.flexicache h3, .flexicache h4 {
+	border-bottom: solid 1px #aaa;
+}
+
+.flexicache h5 {
+	font-size: 1em;
+	margin-bottom: 0;
+}
+
+.flexicache ul {
+	margin-left: 2em;
+	list-style: disc outside;
+}
+
+table.flexicache-doc,
+table.flexicache-doc th,
+table.flexicache-doc td
+{
+	border: solid 1px #aaa;
+	border-collapse: collapse;
+}
+
+table.flexicache-doc th,
+table.flexicache-doc td
+{
+	text-align: left;
+	font-size: 0.8em;
+	padding: 0.5em;
+}
+
+table.flexicache-doc th
+{
+	background: #eee;
+}
+
+#flexicache-htaccess-preview {
+	display: none;
+}

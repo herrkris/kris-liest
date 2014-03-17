@@ -1,4 +1,4 @@
-lib export-ignore
+./lib export-ignore
 config export-ignore
 Capfile export-ignore
 Gemfile export-ignore

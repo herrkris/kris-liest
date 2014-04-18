@@ -93,6 +93,16 @@ class Contributors extends \Podlove\Modules\Base {
 			return (bool) $c->getContributor();
 		});
 
+		if (isset($args['id'])) {
+			foreach ($contributions as $contribution) {
+				if ($contribution->getContributor()->slug == $args['id']) {
+					return new Template\Contributor($contribution->getContributor(), $contribution);
+				}
+			}
+			// if an id is set but cannot be found, return null
+			return null;
+		}
+
 		// filter by role
 		if (isset($args['role']) && $args['role'] != 'all') {
 			$role = $args['role'];
@@ -392,14 +402,22 @@ class Contributors extends \Podlove\Modules\Base {
 							$contributions[] = $contrib;						
 					}
 
+					// map indices to IDs
+					$map = array();
+					$i = 0;
+					foreach ($contributions as $c) {
+						$map["default" . $c->contributor_id . "_" . $i] = $c;
+						$i++;
+					}
+
 				} else {
 					$contributions = \Podlove\Modules\Contributors\Model\EpisodeContribution::all("WHERE `episode_id` = " . $episode->id . " ORDER BY `position` ASC");
-				}
 
-				// map indices to IDs
-				$map = array();
-				foreach ($contributions as $c) {
-					$map[$c->id] = $c;
+					// map indices to IDs
+					$map = array();
+					foreach ($contributions as $c) {
+						$map[$c->id] = $c;
+					}
 				}
 
 				echo '</table>';
@@ -417,7 +435,8 @@ class Contributors extends \Podlove\Modules\Base {
 	 */
 	public function podcast_settings_tab($tabs)
 	{
-		$tabs->addTab( new Settings\PodcastSettingsTab( __( 'Contributors', 'podlove' ) ) );
+		$tabs->addTab( new Settings\PodcastContributorsSettingsTab( __( 'Contributors', 'podlove' ) ) );
+		$tabs->addTab( new Settings\PodcastFlattrSettingsTab( __( 'Flattr', 'podlove' ) ) );
 		return $tabs;
 	}
 
@@ -464,6 +483,9 @@ class Contributors extends \Podlove\Modules\Base {
 		$contributors_roles = \Podlove\Modules\Contributors\Model\ContributorRole::selectOptions();
 		$contributors_groups = \Podlove\Modules\Contributors\Model\ContributorGroup::selectOptions();
 		$cjson = array();
+
+		// only valid contributions
+		$current_contributions = array_filter($current_contributions, function($c) { return $c->contributor_id > 0; });
 
 		$has_roles  = count( $contributors_roles ) > 0;
 		$has_groups = count( $contributors_groups ) > 0;
@@ -534,9 +556,10 @@ class Contributors extends \Podlove\Modules\Base {
 			</div>
 
 			<script type="text/template" id="contributor-row-template">
-			<tr class="media_file_row podlove-contributor-table" data-contributor-id="{{contributor-id}}">
+			<tr class="media_file_row podlove-contributor-table" data-contributor-id="{{contributor-id}}" data-row-number="{{id}}">
 				<td class="podlove-avatar-column"></td>
 				<td class="podlove-contributor-column">
+					<div style="min-width: 205px">
 					<select name="<?php echo $form_base_name ?>[{{id}}][{{contributor-id}}][id]" class="chosen-image podlove-contributor-dropdown">
 						<option value=""><?php echo __('Choose Contributor', 'podlove') ?></option>
 						<?php foreach ( \Podlove\Modules\Contributors\Model\Contributor::all() as $contributor ): ?>
@@ -544,6 +567,7 @@ class Contributors extends \Podlove\Modules\Base {
 						<?php endforeach; ?>
 					</select>
 					<a class="clickable podlove-icon-edit podlove-contributor-edit" href="<?php echo site_url(); ?>/wp-admin/edit.php?post_type=podcast&amp;page=podlove_contributors_settings_handle&amp;action=edit&contributor={{contributor-id}}"></a>
+					</div>
 				</td>
 				<?php if( $has_groups ) : ?>
 				<td>
@@ -637,8 +661,9 @@ class Contributors extends \Podlove\Modules\Base {
 
 					function contributor_dropdown_handler() {
 						$('table').on('change', 'select.podlove-contributor-dropdown', function() {
-							contributor = fetch_contributor(this.value);
-							row = $(this).parent().parent();
+							var i;
+							var contributor = fetch_contributor(this.value);
+							var row = $(this).closest("tr");
 
 							// Check for empty contributors / for new field
 							if( typeof contributor === 'undefined' ) {
@@ -646,6 +671,8 @@ class Contributors extends \Podlove\Modules\Base {
 								row.find(".podlove-contributor-edit").hide();
 								return;
 							}
+
+							i = row.data("row-number");
 
 							// Setting data attribute and avatar field
 							row.data("contributor-id", contributor.id);
@@ -657,7 +684,6 @@ class Contributors extends \Podlove\Modules\Base {
 							row.find(".podlove-comment").attr("name", PODLOVE.Contributors_form_base_name + "[" + i + "]" + "[" + contributor.id + "]" + "[comment]");
 							row.find(".podlove-contributor-edit").attr("href", "<?php echo site_url(); ?>/wp-admin/edit.php?post_type=podcast&page=podlove_contributors_settings_handle&action=edit&contributor=" + contributor.id);
 							row.find(".podlove-contributor-edit").show(); // Show Edit Button
-							i++; // continue using "i" which was already used to add the existing contributions
 						});
 					}
 

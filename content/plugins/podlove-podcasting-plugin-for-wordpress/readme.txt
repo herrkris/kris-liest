@@ -85,6 +85,80 @@ Find the setting Flattr > Advanced Settings > Flattrable content > Post Types an
 
 == Changelog ==
 
+= 1.10.7 =
+
+* Feature: Direct episode access in templates via `{{ podcast.episodes({slug: 'pod001'}).title }}`
+* Feature: Episodes in templates can be filtered and ordered, for example `{{ podcast.episodes({orderby: 'title', 'order': 'ASC'}) }}`. For details, see [`podcast.episodes` documentation](http://docs.podlove.org/publisher/template-reference/#podcast)
+* Feature: Direct contributor access in templates via `{{ podcast.contributors({id: 'john'}).name }}`
+* Feature: Add shortcode `[podlove-podcast-social-media-list]`, which lists all social media accounts for the podcast
+* Feature: Add shortcode `[podlove-podcast-donations-list]`, which lists all donation accounts for the podcast
+* Feature: Add tag support for Auphonic
+* Enhancement: Add "Save and Continue Editing" buttons to all table based management screens
+* Enhancement: Use translations for month and day names in formatted template dates (if a language other than english is used)
+* Enhancement: Add refresh buttons for Auphonic preset selector
+* Enhancement: Pass more data to web player (as preparation for the next release)
+* Enhancement: Improved export format: It has its own namespace and a version now. Publisher version and export date are included as XML comments. XML elements are indented for better readability.
+* Remove default content for new templates
+* Fix: "Network Activate" works now
+* Fix: group and role filters for `[podlove-podcast-contributor-list]` shortcode work as expected now
+* Fix: Add services and donations to export format
+* Fix: `episode.player` in episode loops, outside the WordPress loop works now
+* Fix: Auphonic chapter integration issue
+* Fix: Instagram URL scheme
+
+= 1.10.6 =
+
+* Fix: contributor services will be saved correctly
+* Enhancement: add a donation column to contributor management table
+
+= 1.10.5 =
+
+**Changes to the Templating System**
+
+`episode.recordingDate` and `episode.publicationDate` are DateTime objects now. Available accessors are: year, month, day, hours, minutes, seconds. For custom formatting, use `episode.recordingDate.format("Y-m-d H:i:s")` for example. Calling `episode.recordingDate` directly is still supported and defaults to the format configured in WordPress.
+
+**Other Changes**
+
+* Enhancement: Add refresh buttons for ADN patter and broadcast channel selectors
+* Fix: Avoid "Grey Goo" scenario of self-replicating contributors
+
+= 1.10.4 =
+
+* Hotfix: solve migration issue
+
+= 1.10.3 =
+
+**Changes to the Templating System**
+
+* New filter: `padLeft(padCharacter, padLength)` can be used to append a character to the left of the given string until a certain length is reached. Example: `{{ "4"|padLeft("0",2) }}` returns "04";
+* For consistency `{{ contributor.avatar }}` is now an object. To render an HTML image tag, use `{% include '@contributors/avatar.twig' with {'avatar': contributor.avatar} only %}`.
+* `{{ episode.duration }}` has been turned into an object to enable custom time renderings. The duration object has the following accessors: hours, minutes, seconds, milliseconds and totalMilliseconds.
+
+__DEPRECATIONS/WARNINGS__
+
+* `{{ episode.duration }}` should not be used any more. The default templates are updated but if you have used it in a custom template, you must replace it. Example: `{{ episode.duration.hours }}:{{ episode.duration.minutes|padLeft("0",2) }}:{{ episode.duration.seconds|padLeft("0",2) }}`
+* `{{ episode.license.html }}` and `{{ podcast.license.html }}` are deprecated. Use `{% include '@core/license.twig' %}` for the previous behaviour of choosing the correct license based on context. If you want to be more specific, use `{% include '@core/license.twig' with {'license': episode.license} %}` or `{% include '@core/license.twig' with {'license': podcast.license} %}`.
+
+**Other Changes**
+
+* Feature: ADN Module supports broadcasts
+* Enhancement: Contributor shortcode defaults to `donations="yes"` to avoid confusion
+* Enhancement: `[podlove-episode-downloads]` now uses templates internally
+* Enhancement: Added 500px, Last.fm, OpenStreetMap and Soup to Services
+* Enhancement: Use custom contributor social/donation titles as icon titles
+* Enhancement: Template form has a "Save Changes and Continue Editing" button now
+* Enhancement: feed validation is asynchronous now and has improved performance
+* Enhancement: Licenses have a new interface and are compatible with Auphonic now: they can be imported from a finished production and are included when creating a production.
+* Enhancement: Default MySQL character set is utf8 now when creating tables
+* Enhancement: Add datepicker for episode recording date
+* Fix: all default contributors appear in new episodes again
+* Fix: change Tumblr URLs from https to http since Tumblr does not support them
+* Fix: `[podlove-podcast-contributor-list]` shows the correct contributors now
+* Fix: internal template warning when accessing empty contributor roles or groups
+* Fix: episode rendering when no files are available
+* Fix: flattr script in rss feeds
+* Fix: importer issue where sometimes modules would not activate properly
+
 = 1.10.2 =
 
 * Feature: add template filter `formatBytes` to format an integer as kilobytes, megabytes etc. Example: `{{ file.size|formatBytes }}`

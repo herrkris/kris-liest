@@ -52,8 +52,12 @@ class Templates {
 			
 		$template = \Podlove\Model\Template::find_by_id( $_REQUEST['template'] );
 		$template->update_attributes( $_POST['podlove_template'] );
-		
-		$this->redirect( 'index', $template->id );
+
+		if (isset($_POST['submit_and_stay'])) {
+			$this->redirect( 'edit', $template->id );
+		} else {
+			$this->redirect( 'index', $template->id );
+		}
 	}
 	
 	/**
@@ -65,7 +69,11 @@ class Templates {
 		$template = new \Podlove\Model\Template;
 		$template->update_attributes( $_POST['podlove_template'] );
 
-		$this->redirect( 'index' );
+		if (isset($_POST['submit_and_stay'])) {
+			$this->redirect( 'edit', $template->id );
+		} else {
+			$this->redirect( 'index' );
+		}
 	}
 	
 	/**
@@ -230,7 +238,15 @@ class Templates {
 			'hidden'  => array(
 				'template' => $template->id,
 				'action' => $action
-			)
+			),
+			'submit_button' => false, // for custom control in form_end
+			'form_end' => function() {
+				echo "<p>";
+				submit_button( __('Save Changes'), 'primary', 'submit', false );
+				echo " ";
+				submit_button( __('Save Changes and Continue Editing', 'podlove'), 'secondary', 'submit_and_stay', false );
+				echo "</p>";
+			}
 		);
 
 		\Podlove\Form\build_for( $template, $form_args, function ( $form ) {
@@ -244,16 +260,8 @@ class Templates {
 
 			$f->text( 'content', array(
 				'label'       => __( 'HTML Template', 'podlove' ),
-				'description' => __( 'Have a look at the <a href="http://docs.podlove.org/publisher/shortcodes/" target="_blank">Shortcode documentation</a> for all available options.', 'podlove' ),
-				'html' => array( 'class' => 'large-text required', 'rows' => 20 ),
-				'default' => <<<EOT
-[podlove-web-player]
-[podlove-episode-downloads]
-
-<span class="podlove-duration">Duration: [podlove-episode field="duration"]</span>
-
-[podlove-podcast-license]
-EOT
+				'description' => __( 'Templates support HTML and Twig. Read the <a href="http://docs.podlove.org/guides/understanding-templates/">Template Guide</a> to get started and have a look at the <a href="http://docs.podlove.org/publisher/template-reference/" target="_blank">Template reference</a> for all available data accessors.', 'podlove' ),
+				'html' => array( 'class' => 'large-text required', 'rows' => 20 )
 			) );
 
 		} );

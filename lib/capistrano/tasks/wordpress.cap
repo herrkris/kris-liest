@@ -40,7 +40,7 @@ namespace :wordpress do
 
       within submodule_path do
         execute :git, :pull
-        within "#{submodule_path}/wordpress" do
+        within "/wordpress" do
           execute :git, :fetch, "--tags"
         end
         execute :git, :submodule, :update
